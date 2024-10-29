@@ -4,16 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DEEPIKAS22CSR040/fitness_tracker.git"
+    "url": "git+https://github.com/DEEPIKAS22CSR040/FitnessTracker"
   },
   "author": "deepika",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/DEEPIKAS22CSR040/fitness_tracker/issues"
+    "url": "https://github.com/DEEPIKAS22CSR040/FitnessTracker/issues"
   },
-  "homepage": "https://github.com/DEEPIKAS22CSR040/fitness_tracker#readme"
+  "homepage": "https://DEEPAIKAS22CSR040.github.io/fitness_tracker"
 }
