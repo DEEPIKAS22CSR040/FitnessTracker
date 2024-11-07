@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { fetchExercises } from '../api/exerciseApi';
 import { useAuth0 } from '@auth0/auth0-react';
-import './WorkoutForm.css'; // Import the CSS file
+import './WorkoutForm.css';
 
 const WorkoutForm = () => {
   const { user } = useAuth0();
@@ -14,11 +14,44 @@ const WorkoutForm = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState('');
 
+  // Define calorie burn rates for exercises (calories burned per minute)
+  const exerciseCalorieRates = {
+    Running: 10,       // 10 calories per minute
+    Cycling: 8,        // 8 calories per minute
+    Jogging: 7,        // 7 calories per minute
+    Walking: 4,        // 4 calories per minute
+    // Add custom exercises if needed with default calorie burn rates
+    '3/4 Sit-up': 5,    
+    '45° Side Bend': 4,
+    'Air Bike': 12,
+    'All Fours Squat Stretch': 2,
+    'Alternate Heel Touchers': 3,
+    'Alternate Lateral Pulldown': 6,
+    'Ankle Circles': 2,
+    'Archer Pull Up': 9,
+    'Archer Push Up': 8,
+    'Arm Slingers Hanging Bent Knee Legs': 7,
+  };
+
   useEffect(() => {
     const loadExercises = async () => {
       try {
         const data = await fetchExercises();
-        setExercises(data);
+        console.log("Fetched exercises:", data);
+
+        // Custom exercises to add to the list
+        const customExercises = [
+          { id: 'custom1', name: 'Cycling' },
+          { id: 'custom2', name: 'Walking' },
+          { id: 'custom3', name: 'Jogging' },
+          { id: 'custom4', name: 'Running' }
+        ];
+
+        // Combine fetched exercises with custom ones
+        const allExercises = Array.isArray(data) ? [...data, ...customExercises] : customExercises;
+        console.log("Combined exercises:", allExercises);
+
+        setExercises(allExercises);
       } catch (error) {
         console.error('Failed to fetch exercises:', error);
         setError('Failed to load exercises. Please try again later.');
@@ -29,6 +62,30 @@ const WorkoutForm = () => {
 
     loadExercises();
   }, []);
+
+  // Handle changes in exercise selection
+  const handleExerciseChange = (e) => {
+    const exercise = e.target.value;
+    setSelectedExercise(exercise);
+
+    // Recalculate calories when exercise is selected
+    if (exercise) {
+      const caloriesPerMinute = exerciseCalorieRates[exercise] || 0;
+      setCaloriesBurned(caloriesPerMinute * Number(duration));
+    }
+  };
+
+  // Handle changes in duration
+  const handleDurationChange = (e) => {
+    const minutes = Number(e.target.value); // Convert to a number
+    setDuration(minutes);
+
+    // Recalculate calories when duration is updated
+    if (selectedExercise) {
+      const caloriesPerMinute = exerciseCalorieRates[selectedExercise] || 0;
+      setCaloriesBurned(caloriesPerMinute * minutes);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,7 +118,7 @@ const WorkoutForm = () => {
         <select 
           className="form-select"
           value={selectedExercise} 
-          onChange={(e) => setSelectedExercise(e.target.value)}
+          onChange={handleExerciseChange}
         >
           <option value="">Select an exercise</option>
           {exercises.map(exercise => (
@@ -78,7 +135,7 @@ const WorkoutForm = () => {
           className="form-input"
           type="number" 
           value={duration} 
-          onChange={(e) => setDuration(e.target.value)} 
+          onChange={handleDurationChange} 
         />
       </label>
 
@@ -88,7 +145,7 @@ const WorkoutForm = () => {
           className="form-input"
           type="number" 
           value={caloriesBurned} 
-          onChange={(e) => setCaloriesBurned(e.target.value)} 
+          readOnly 
         />
       </label>
 
