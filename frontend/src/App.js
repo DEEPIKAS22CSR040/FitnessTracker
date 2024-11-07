@@ -5,7 +5,8 @@ import WorkoutHistory from './components/WorkoutHistory';
 import WorkoutStats from './components/WorkoutStats';
 import ExploreExercises from './components/ExploreExercises';
 import VideoTutorials from './components/VideoTutorials';
-import FindFood from './components/FindFood'; // Import the FindFood component
+import FindFood from './components/FindFood';
+import FindCalories from './components/FindCalories';  // Import the new component
 import './App.css';
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
               <button onClick={() => setActiveTab('workoutStats')}>Statistics & Analytics</button>
               <button onClick={() => setActiveTab('exploreExercises')}>Explore Exercises</button>
               <button onClick={() => setActiveTab('videoTutorials')}>Video Tutorials</button>
-              <button onClick={() => setActiveTab('findFood')}>Find Food</button> {/* New Tab */}
+              <button onClick={() => setActiveTab('findFood')}>Find Food</button>
+              <button onClick={() => setActiveTab('findCalories')}>Find Calories</button> {/* New Tab */}
               <button onClick={() => logout({ returnTo: window.location.origin })}>Logout</button>
             </nav>
           </header>
@@ -34,7 +36,8 @@ function App() {
           {activeTab === 'workoutStats' && <WorkoutStats />}
           {activeTab === 'exploreExercises' && <ExploreExercises />}
           {activeTab === 'videoTutorials' && <VideoTutorials />}
-          {activeTab === 'findFood' && <FindFood />} {/* New Tab Content */}
+          {activeTab === 'findFood' && <FindFood />}
+          {activeTab === 'findCalories' && <FindCalories />} {/* Display the new FindCalories Component */}
         </div>
       ) : (
         <div className="login-container">
