@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const API_URL = 'https://exercisedb.p.rapidapi.com/exercises';
-const API_KEY = '7b5318c0b2msh9f2be9eda9d7755p160a30jsnd4fd2413b7d6'; // Replace with your actual API key
+const API_KEY = '1ff9fcb189msh69de090303e204dp191defjsn62cb0f9c8cc3'; // Replace with your actual API key
 
 export const fetchExercises = async (limit = 10) => {
     try {
