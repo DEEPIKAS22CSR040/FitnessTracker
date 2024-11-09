@@ -12,6 +12,13 @@ import './App.css';
 function App() {
   const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
   const [activeTab, setActiveTab] = useState('logWorkout');
+  const [findSubTab, setFindSubTab] = useState(''); // Track the selected sub-tab in Find
+
+  const handleFindTabClick = () => {
+    // Toggle the dropdown menu for Find tab
+    const menu = document.getElementById('findDropdown');
+    menu.classList.toggle('show');
+  };
 
   return (
     <div>
@@ -25,8 +32,18 @@ function App() {
               <button onClick={() => setActiveTab('workoutStats')}>Statistics & Analytics</button>
               <button onClick={() => setActiveTab('exploreExercises')}>Explore Exercises</button>
               <button onClick={() => setActiveTab('videoTutorials')}>Video Tutorials</button>
-              <button onClick={() => setActiveTab('findFood')}>Find Food</button>
-              <button onClick={() => setActiveTab('findCalories')}>Find Calories</button> {/* New Tab */}
+
+              {/* Find Tab with Dropdown */}
+              <div className="dropdown">
+                <button className="dropdown-button" onClick={handleFindTabClick}>
+                  Find
+                </button>
+                <div id="findDropdown" className="dropdown-content">
+                  <button onClick={() => { setFindSubTab('findFood'); setActiveTab('findFood'); }}>Find Food</button>
+                  <button onClick={() => { setFindSubTab('findCalories'); setActiveTab('findCalories'); }}>Find Calories</button>
+                </div>
+              </div>
+
               <button onClick={() => logout({ returnTo: window.location.origin })}>Logout</button>
             </nav>
           </header>
@@ -37,7 +54,7 @@ function App() {
           {activeTab === 'exploreExercises' && <ExploreExercises />}
           {activeTab === 'videoTutorials' && <VideoTutorials />}
           {activeTab === 'findFood' && <FindFood />}
-          {activeTab === 'findCalories' && <FindCalories />} {/* Display the new FindCalories Component */}
+          {activeTab === 'findCalories' && <FindCalories />}
         </div>
       ) : (
         <div className="login-container">
