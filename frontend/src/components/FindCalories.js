@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import './FindCalories.css';
 
-
 const FindCalories = () => {
+  const { user } = useAuth0();
   const [exerciseQuery, setExerciseQuery] = useState('');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [gender, setGender] = useState('');
   const [caloriesBurned, setCaloriesBurned] = useState(null);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   // Define your API credentials
-  const apiKey = '60f0736abdb11bb951bdeb4cf660a8a6';  // Replace with your Nutritionix API Key
-  const apiId = '355ea952';    // Replace with your Nutritionix App ID
+  const apiKey = '60f0736abdb11bb951bdeb4cf660a8a6';
+  const apiId = '355ea952';
 
   // Handle the calorie search
   const handleSearch = async () => {
@@ -26,37 +28,52 @@ const FindCalories = () => {
     setCaloriesBurned(null);
 
     try {
-      // Make a POST request to Nutritionix API's natural/exercise endpoint
       const response = await axios.post(
         'https://trackapi.nutritionix.com/v2/natural/exercise',
-        { 
-          query: exerciseQuery 
-        },
+        { query: exerciseQuery },
         {
           headers: {
-            'x-app-id': apiId, 
+            'x-app-id': apiId,
             'x-app-key': apiKey,
             'Content-Type': 'application/json',
           },
-          params: {
-            age,
-            weight,
-            gender,
-          },
+          params: { age, weight, gender },
         }
       );
 
       const data = response.data;
 
-      // Check if exercise info is found
       if (data.exercises && data.exercises.length > 0) {
-        setCaloriesBurned(data.exercises[0].nf_calories);
+        const calculatedCalories = data.exercises[0].nf_calories;
+        setCaloriesBurned(calculatedCalories);
+
+        // Log workout in the database
+        await logWorkoutInDatabase(calculatedCalories);
       } else {
         setError('No exercise data found.');
       }
     } catch (err) {
       setError('Error fetching data.');
       console.error(err);
+    }
+  };
+
+  // Log workout to the database
+  const logWorkoutInDatabase = async (calories) => {
+    const userId = user?.email;
+
+    try {
+      const response = await axios.post('http://localhost:5000/saveWorkout', {
+        userId,
+        workoutType: exerciseQuery,
+        duration: age,  // Use relevant field or update with another input if needed
+        caloriesBurned: calories,
+      });
+      setMessage('Workout logged successfully!');
+      console.log('Workout logged successfully:', response.data);
+    } catch (error) {
+      console.error('Error logging workout:', error);
+      setMessage('Error logging workout. Please try again.');
     }
   };
 
@@ -98,6 +115,8 @@ const FindCalories = () => {
           <h3>Calories Burned: {caloriesBurned} kcal</h3>
         </div>
       )}
+
+      {message && <p className="form-message">{message}</p>}
     </div>
   );
 };

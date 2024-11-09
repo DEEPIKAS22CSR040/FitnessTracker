@@ -14,14 +14,13 @@ const WorkoutForm = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState('');
 
-  // Define calorie burn rates for exercises (calories burned per minute)
+  // Define calorie burn rates for exercises
   const exerciseCalorieRates = {
-    Running: 10,       // 10 calories per minute
-    Cycling: 8,        // 8 calories per minute
-    Jogging: 7,        // 7 calories per minute
-    Walking: 4,        // 4 calories per minute
-    // Add custom exercises if needed with default calorie burn rates
-    '3/4 Sit-up': 5,    
+    'Running': 10,
+    'Cycling': 8,
+    'Jogging': 7,
+    'Walking': 4,
+    '3/4 Sit-up': 5,
     '45° Side Bend': 4,
     'Air Bike': 12,
     'All Fours Squat Stretch': 2,
@@ -71,13 +70,13 @@ const WorkoutForm = () => {
     // Recalculate calories when exercise is selected
     if (exercise) {
       const caloriesPerMinute = exerciseCalorieRates[exercise] || 0;
-      setCaloriesBurned(caloriesPerMinute * Number(duration));
+      setCaloriesBurned(caloriesPerMinute * duration);
     }
   };
 
   // Handle changes in duration
   const handleDurationChange = (e) => {
-    const minutes = Number(e.target.value); // Convert to a number
+    const minutes = Number(e.target.value);
     setDuration(minutes);
 
     // Recalculate calories when duration is updated
