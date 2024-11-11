@@ -1,4 +1,4 @@
-// App.js
+// src/App.js
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import WorkoutHistory from './components/WorkoutHistory';
@@ -10,8 +10,8 @@ import FindCalories from './components/FindCalories';
 import './App.css';
 
 function App() {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
-  const [activeTab, setActiveTab] = useState('home'); // Set default tab to 'home'
+  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const [activeTab, setActiveTab] = useState('findCalories');
 
   return (
     <div>
@@ -30,7 +30,6 @@ function App() {
             </nav>
           </header>
 
-          
           {activeTab === 'findFood' && <FindFood />}
           {activeTab === 'workoutHistory' && <WorkoutHistory />}
           {activeTab === 'workoutStats' && <WorkoutStats />}

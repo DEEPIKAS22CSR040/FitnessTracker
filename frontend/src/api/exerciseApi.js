@@ -12,10 +12,10 @@ export const fetchExercises = async (limit = 10) => {
           'x-rapidapi-key': API_KEY,
         },
       });
-      return response.data; // This will contain the list of exercises
+      return response.data; 
     } catch (error) {
       console.error('Error fetching exercises:', error);
-      throw error; // Propagate the error to handle it in the component
+      throw error; 
     }
   };
   

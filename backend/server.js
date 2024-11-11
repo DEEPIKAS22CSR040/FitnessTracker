@@ -3,12 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-
+// MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/fittrack_db', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -16,7 +15,7 @@ mongoose.connect('mongodb://localhost:27017/fittrack_db', {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log('MongoDB connection error:', err));
 
-
+// User Schema
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -25,35 +24,11 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-
-app.post('/saveUser', async (req, res) => {
-  const { name, email, picture } = req.body;
-  console.log(req.body);
-
-  try {
-    
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      
-      user = new User({ name, email, picture });
-      await user.save();
-      return res.status(201).send('User created');
-    } else {
-      
-      return res.status(200).send('User already exists');
-    }
-  } catch (error) {
-    console.error('Error saving user:', error);
-    return res.status(500).send('Error saving user'); 
-  }
-});
-
-
+// Workout Schema
 const workoutSchema = new mongoose.Schema({
   userId: String,
   workoutType: String,
-  duration: Number, 
+  duration: Number,
   caloriesBurned: Number,
   date: { type: Date, default: Date.now },
 });
@@ -61,6 +36,27 @@ const workoutSchema = new mongoose.Schema({
 const Workout = mongoose.model('Workout', workoutSchema);
 
 
+// Save User Route
+app.post('/saveUser', async (req, res) => {
+  const { name, email, picture } = req.body;
+  console.log(req.body);
+
+  try {
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({ name, email, picture });
+      await user.save();
+      return res.status(201).send('User created');
+    } else {
+      return res.status(200).send('User already exists');
+    }
+  } catch (error) {
+    console.error('Error saving user:', error);
+    return res.status(500).send('Error saving user');
+  }
+});
+
+// Save Workout Route
 app.post('/saveWorkout', async (req, res) => {
   const { userId, workoutType, duration, caloriesBurned, date } = req.body;
   try {
@@ -73,12 +69,11 @@ app.post('/saveWorkout', async (req, res) => {
   }
 });
 
-
+// Get Workouts Route
 app.get('/workouts/:userId', async (req, res) => {
   const { userId } = req.params;
-
   try {
-    const workouts = await Workout.find({ userId }).sort({ date: -1 }); 
+    const workouts = await Workout.find({ userId }).sort({ date: -1 });
     res.status(200).json(workouts);
   } catch (error) {
     console.error('Error fetching workout history:', error);
@@ -86,19 +81,14 @@ app.get('/workouts/:userId', async (req, res) => {
   }
 });
 
-
+// Get Total Workouts by Date Route
 app.get('/workouts/totalByDate/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const workouts = await Workout.aggregate([
       { $match: { userId: userId } },
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-          totalWorkouts: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } } 
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } }, totalWorkouts: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
     ]);
     res.status(200).json(workouts);
   } catch (error) {
@@ -106,6 +96,7 @@ app.get('/workouts/totalByDate/:userId', async (req, res) => {
     res.status(500).send('Error fetching total workouts');
   }
 });
+
 
 
 const PORT = 5000;
